@@ -54,7 +54,8 @@ if app_mode == "⚙️ 1. 輸送機動力計算 (主系統)":
         with st.expander("⚙️ 進階參數 (點擊展開)"):
             slip = st.number_input("馬達滑差率 (%)", value=5.5)
             eff_gear = st.number_input("減速機效率 (%)", value=85)
-            eff_trans = st.number_input("馬達效率 (%)", value=95)
+            # [修改] 將馬達效率改為扭力損失/機械損耗
+            torque_loss_pct = st.number_input("扭力損失 / 機械損耗 (%)", value=5.5)
             sf = st.number_input("安全係數", value=1.25)
 
         submitted_main = st.form_submit_button("🚀 執行計算", use_container_width=True)
@@ -71,7 +72,8 @@ if app_mode == "⚙️ 1. 輸送機動力計算 (主系統)":
             angle_rad = math.radians(angle)
             f_total = ((mu * mass * g * math.cos(angle_rad)) + (mass * g * math.sin(angle_rad))) * sf
             
-            total_efficiency = (eff_gear / 100) * (eff_trans / 100)
+            # [修改] 總效率計算：減速機效率 * (1 - 機械損耗率)
+            total_efficiency = (eff_gear / 100) * (1 - (torque_loss_pct / 100))
             torque_drum = f_total * radius
             torque_motor = torque_drum / (ratio * total_efficiency)
             
