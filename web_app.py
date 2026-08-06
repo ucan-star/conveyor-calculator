@@ -33,7 +33,7 @@ st.sidebar.divider()
 # ==========================================
 if app_mode == "⚙️ 1. 輸送機動力計算 (主系統)":
     st.title("⚙️ 輸送機動力計算")
-    st.markdown("👉 **參數設定已移至左側選單**。")
+    st.markdown("👉 **參數設定在左側選單**。")
 
     with st.sidebar.form("calculator_form"):
         st.header("📝 參數設定")
