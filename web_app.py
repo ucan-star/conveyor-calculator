@@ -54,9 +54,9 @@ with st.sidebar.form("calculator_form"):
     ratio = st.number_input("減速比 (1:X)", value=20.0)
     
     with st.expander("⚙️ 進階參數 (點擊展開)"):
-        slip = st.number_input("預估滑差率 (%)", value=2.7)
+        slip = st.number_input("馬達滑差率 (%)", value=2.7)
         eff_gear = st.number_input("減速機效率 (%)", value=85.0)
-        eff_trans = st.number_input("傳動效率 (%)", value=95.0)
+        eff_trans = st.number_input("馬達效率 (%)", value=95.0)
         sf = st.number_input("安全係數", value=1.2)
 
     submitted = st.form_submit_button("🚀 執行計算", use_container_width=True)
