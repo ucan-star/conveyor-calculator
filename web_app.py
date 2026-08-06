@@ -248,16 +248,16 @@ elif app_mode == "⚙️ 5. 減速機輸出扭力與轉速計算":
         c1, c2 = st.columns(2)
         power_kw = c1.number_input("1. 馬達功率 (kW)", value=0.75, format="%.2f")
         freq = c2.number_input("2. 電源頻率 (Hz)", value=60)
-        poles = c1.number_input("3. 馬達極數 (Poles)", value=4)
-        slip = c2.number_input("4. 滑差率 (%)", value=5.5)
+        slip = c1.number_input("3. 滑差率 (%)", value=5.5)
+        torque_loss_pct = c2.number_input("4. 扭力損失 / 機械損耗 (%)", value=5.5)
+        poles = c1.number_input("5. 馬達極數 (Poles)", value=4)
         
         st.divider()
         
-        st.subheader("⚙️ 減速機與損耗參數")
+        st.subheader("⚙️ 減速機參數")
         c3, c4 = st.columns(2)
-        ratio = c3.number_input("5. 減速比 (1:X)", value=20)
-        eff_gear = c4.number_input("6. 減速機效率 (%)", value=85)
-        torque_loss_pct = c3.number_input("7. 扭力損失 / 機械損耗 (%)", value=5.5)
+        ratio = c3.number_input("6. 減速比 (1:X)", value=20)
+        eff_gear = c4.number_input("7. 減速機效率 (%)", value=85)
         
         submitted_mod5 = st.form_submit_button("🚀 計算輸出參數", use_container_width=True)
 
