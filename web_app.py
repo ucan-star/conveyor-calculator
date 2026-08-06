@@ -39,10 +39,10 @@ if app_mode == "⚙️ 1. 輸送機動力計算 (主系統)":
         st.header("📝 參數設定")
         
         st.subheader("📦 負載與機械結構")
-        diameter = st.number_input("1. 驅動輪直徑 (mm)", value=400)
+        diameter = st.number_input("1. 驅動輪直徑 (mm)", value=100)
         mass = st.number_input("2. 總負載質量 (kg)", value=500)
-        mu = st.number_input("3. 摩擦係數 (μ)", value=0.05, format="%.2f")
-        angle = st.number_input("4. 傾斜角度 (度)", value=15)
+        mu = st.number_input("3. 摩擦係數 (μ)", value=0.20, format="%.2f")
+        angle = st.number_input("4. 傾斜角度 (度)", value=0)
 
         st.divider() 
         
@@ -52,10 +52,10 @@ if app_mode == "⚙️ 1. 輸送機動力計算 (主系統)":
         ratio = st.number_input("減速比 (1:X)", value=20)
         
         with st.expander("⚙️ 進階參數 (點擊展開)"):
-            slip = st.number_input("馬達滑差率 (%)", value=2.7)
+            slip = st.number_input("馬達滑差率 (%)", value=5.5)
             eff_gear = st.number_input("減速機效率 (%)", value=85)
             eff_trans = st.number_input("馬達效率 (%)", value=95)
-            sf = st.number_input("安全係數", value=1.2)
+            sf = st.number_input("安全係數", value=1.25)
 
         submitted_main = st.form_submit_button("🚀 執行計算", use_container_width=True)
 
@@ -90,8 +90,8 @@ if app_mode == "⚙️ 1. 輸送機動力計算 (主系統)":
             st.info("🎯 核心驅動需求對照")
             res_col4, res_col5, res_col6 = st.columns(3)
             res_col4.metric("1. 理論所需功率", f"{kw:.2f} kW")
-            res_col5.metric("2. 馬達扭力 (馬達端)", f"{t_motor:.2f} N·m")
-            res_col6.metric("3. 輸送帶需求扭力 (滾筒端)", f"{t_drum:.2f} N·m")
+            res_col5.metric("2. 馬達扭力 (馬達端)", f"{torque_motor:.2f} N·m")
+            res_col6.metric("3. 輸送帶需求扭力 (滾筒端)", f"{torque_drum:.2f} N·m")
             
             st.warning(f"💡 **工程建議**：選用之馬達功率需大於 **{kw:.2f} kW** (搭配減速比 1:{ratio})")
             
@@ -108,10 +108,10 @@ elif app_mode == "🏃‍♂️ 2. 輸送帶線速度計算":
     
     with st.sidebar.form("speed_form"):
         st.header("📝 參數設定")
-        diameter = st.number_input("驅動輪直徑 (mm)", value=400)
+        diameter = st.number_input("驅動輪直徑 (mm)", value=100)
         freq = st.number_input("電源頻率 (Hz)", value=60)
         poles = st.number_input("馬達極數 (Poles)", value=4)
-        slip = st.number_input("馬達滑差率 (%)", value=2.7)
+        slip = st.number_input("馬達滑差率 (%)", value=5.5)
         ratio = st.number_input("減速比 (1:X)", value=20)
         submitted_speed = st.form_submit_button("🚀 計算線速度", use_container_width=True)
 
@@ -140,10 +140,10 @@ elif app_mode == "🔄 3. 目標速度反推減速比":
     with st.sidebar.form("ratio_form"):
         st.header("📝 參數設定")
         target_speed = st.number_input("目標線速度 (M/min)", value=15.0, format="%.1f")
-        diameter = st.number_input("驅動輪直徑 (mm)", value=400)
+        diameter = st.number_input("驅動輪直徑 (mm)", value=100)
         freq = st.number_input("電源頻率 (Hz)", value=60)
         poles = st.number_input("馬達極數 (Poles)", value=4)
-        slip = st.number_input("馬達滑差率 (%)", value=2.7)
+        slip = st.number_input("馬達滑差率 (%)", value=5.5)
         submitted_ratio = st.form_submit_button("🚀 反推減速比", use_container_width=True)
 
     if submitted_ratio:
@@ -177,8 +177,8 @@ elif app_mode == "⚡ 4. 馬達轉速與扭力計算":
         power_kw = st.number_input("馬達功率 (kW)", value=0.75, format="%.2f", help="1 HP ≒ 0.75 kW")
         freq = st.number_input("電源頻率 (Hz)", value=60)
         poles = st.number_input("馬達極數 (Poles)", value=4)
-        slip = st.number_input("滑差率 (%)", value=2.7)
-        torque_loss_pct = st.number_input("扭力損失 / 機械損耗 (%)", value=5.0)
+        slip = st.number_input("滑差率 (%)", value=5.5)
+        torque_loss_pct = st.number_input("扭力損失 / 機械損耗 (%)", value=5.5)
         submitted_motor = st.form_submit_button("🚀 計算馬達參數", use_container_width=True)
 
     if submitted_motor:
@@ -207,7 +207,6 @@ elif app_mode == "⚡ 4. 馬達轉速與扭力計算":
             
             st.info("💪 扭力數據")
             col3, col4 = st.columns(2)
-            # 在 N·m 後方加入 kg·m 顯示
             col3.metric("1. 理論額定扭力", f"{rated_torque_nm:.2f} N·m ({rated_torque_kgm:.2f} kg·m)")
             col4.metric("2. 實際輸出扭力 (扣除損耗)", f"{actual_torque_nm:.2f} N·m ({actual_torque_kgm:.2f} kg·m)")
             
