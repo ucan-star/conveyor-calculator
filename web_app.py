@@ -33,7 +33,8 @@ st.sidebar.divider()
 # ==========================================
 if app_mode == "⚙️ 1. 輸送機動力計算 (主系統)":
     st.title("⚙️ 輸送機動力計算")
-    st.markdown("👉 **參數設定在左側選單**。")
+    # [修改] 提示標語更新
+    st.markdown("👉 **參數設定在左側選單**")
 
     with st.sidebar.form("calculator_form"):
         st.header("📝 參數設定")
@@ -51,12 +52,12 @@ if app_mode == "⚙️ 1. 輸送機動力計算 (主系統)":
         poles = st.number_input("馬達極數 (Poles)", value=4)
         ratio = st.number_input("減速比 (1:X)", value=20)
         
-        with st.expander("⚙️ 進階參數 (點擊展開)"):
-            slip = st.number_input("馬達滑差率 (%)", value=5.5)
-            eff_gear = st.number_input("減速機效率 (%)", value=85)
-            # [修改] 將馬達效率改為扭力損失/機械損耗
-            torque_loss_pct = st.number_input("扭力損失 / 機械損耗 (%)", value=5.5)
-            sf = st.number_input("安全係數", value=1.25)
+        # [修改] 移除 expander 展開按鈕，改為直接展開排列
+        st.subheader("⚙️ 進階參數")
+        slip = st.number_input("馬達滑差率 (%)", value=5.5)
+        eff_gear = st.number_input("減速機效率 (%)", value=85)
+        torque_loss_pct = st.number_input("扭力損失 / 機械損耗 (%)", value=5.5)
+        sf = st.number_input("安全係數", value=1.25)
 
         submitted_main = st.form_submit_button("🚀 執行計算", use_container_width=True)
 
@@ -72,7 +73,6 @@ if app_mode == "⚙️ 1. 輸送機動力計算 (主系統)":
             angle_rad = math.radians(angle)
             f_total = ((mu * mass * g * math.cos(angle_rad)) + (mass * g * math.sin(angle_rad))) * sf
             
-            # [修改] 總效率計算：減速機效率 * (1 - 機械損耗率)
             total_efficiency = (eff_gear / 100) * (1 - (torque_loss_pct / 100))
             torque_drum = f_total * radius
             torque_motor = torque_drum / (ratio * total_efficiency)
