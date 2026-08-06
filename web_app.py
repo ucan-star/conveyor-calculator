@@ -71,14 +71,14 @@ with st.sidebar.form("calculator_form"):
     # value 改為整數 (例如 400)，就不會顯示 .00
     diameter = st.number_input("1. 驅動輪直徑 (mm)", value=400)
     mass = st.number_input("2. 總負載質量 (kg)", value=500)
-    mu = st.number_input("3. 摩擦係數 (μ)", value=0.05, format="%.2f")
-    angle = st.number_input("4. 傾斜角度 (度)", value=15)
+    mu = st.number_input("3. 摩擦係數 (μ)", value=0.15, format="%.2f")
+    angle = st.number_input("4. 傾斜角度 (度)", value=0)
 
     st.divider() 
     
     st.subheader("⚡ 馬達與傳動系統")
     freq = st.number_input("電源頻率 (Hz)", value=60)
-    ratio = st.number_input("減速比 (1:X)", value=20)
+    ratio = st.number_input("減速比 (1:X)", value=10)
     
     with st.expander("⚙️ 進階參數 (點擊展開)"):
         # 根據上面的選單自動帶入數值
@@ -91,9 +91,9 @@ with st.sidebar.form("calculator_form"):
             
         poles = st.number_input("馬達極數 (Poles)", value=default_poles)
         slip = st.number_input("馬達滑差率 (%)", value=float(default_slip))
-        eff_gear = st.number_input("減速機效率 (%)", value=85)
+        eff_gear = st.number_input("減速機效率 (%)", value=90)
         eff_trans = st.number_input("馬達效率 (%)", value=float(default_eff))
-        sf = st.number_input("安全係數", value=1.2)
+        sf = st.number_input("安全係數", value=1.25)
 
     submitted = st.form_submit_button("🚀 執行計算", use_container_width=True)
 
