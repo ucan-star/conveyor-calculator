@@ -24,7 +24,8 @@ app_mode = st.sidebar.radio(
         "🏃‍♂️ 2. 輸送帶線速度計算", 
         "🔄 3. 目標速度反推減速比", 
         "⚡ 4. 馬達轉速與扭力計算",
-        "⚙️ 5. 減速機輸出扭力與轉速計算" # [新增] 第5模組
+        "⚙️ 5. 減速機輸出扭力與轉速計算",
+        "🏗️ 6. 剪式升降機扭力計算" # [新增] 第6模組
     ]
 )
 st.sidebar.divider()
@@ -297,3 +298,98 @@ elif app_mode == "⚙️ 5. 減速機輸出扭力與轉速計算":
             
         except Exception as e:
             st.error("數值輸入有誤！請確認輸入的參數格式。")
+
+# ==========================================
+# 模組 6: 剪式升降機 (Scissor Lift) 扭力計算
+# ==========================================
+elif app_mode == "🏗️ 6. 剪式升降機扭力計算":
+    st.title("🏗️ 剪式升降機 (Scissor Lift) 扭力計算")
+    st.markdown("單層剪叉機構，馬達直接驅動螺桿（或將減速機視為馬達輸出端的一部份）。")
+    
+    with st.form("scissor_lift_form"):
+        st.header("📝 參數設定")
+        
+        st.subheader("📦 已知條件 (負載與機構)")
+        c1, c2 = st.columns(2)
+        weight_kg = c1.number_input("1. 總載重 W (KG)", value=1021.0)
+        angle_deg = c2.number_input("2. 初始夾角 θ (度)", value=15.0)
+        layers = c1.number_input("3. 剪叉層數 n", value=1, step=1)
+        speed_vy = c2.number_input("4. 垂直速度 Vy (m/min)", value=1.0)
+        
+        st.divider()
+        
+        st.subheader("🔩 螺桿與傳動條件")
+        c3, c4 = st.columns(2)
+        lead_mm = c3.number_input("5. 螺桿導程 p (mm)", value=5.0)
+        eff_screw = c4.number_input("6. 螺桿效率 η", value=0.9, format="%.2f", help="滾珠螺桿約0.9，梯形螺桿約0.3~0.5")
+        sf = c3.number_input("7. 安全係數 (Safety Factor)", value=2.0)
+        
+        st.divider()
+
+        st.subheader("⚙️ 減速機選配評估")
+        c5, c6 = st.columns(2)
+        sel_motor_kw = c5.number_input("8. 選用馬達功率 (kW)", value=0.37)
+        sel_motor_rpm = c6.number_input("9. 馬達轉速 (rpm)", value=1700)
+        sel_ratio = c5.number_input("10. 選用減速比 (1:X)", value=30)
+        eff_gearbox = c6.number_input("11. 減速機效率", value=0.9, format="%.2f")
+        eff_mech = c5.number_input("12. 機械傳動效率", value=1.0, format="%.2f")
+        
+        submitted_mod6 = st.form_submit_button("🚀 執行計算", use_container_width=True)
+
+    if submitted_mod6:
+        try:
+            # --- 基本轉換 ---
+            g = 9.8 # 依照原表採用 9.8 進行換算
+            weight_n = weight_kg * g
+            lead_m = lead_mm / 1000
+            
+            # 角度轉換為弧度 (修正EXCEL直接計算tan(角度)的誤差問題)
+            angle_rad = math.radians(angle_deg)
+            tan_theta = math.tan(angle_rad)
+            
+            # --- 1. 計算推力與扭力 ---
+            force_n = (layers * weight_n) / tan_theta
+            torque_nm = (force_n * lead_m) / (2 * math.pi * eff_screw)
+            torque_req = torque_nm * sf # 修正扭力 (乘上安全係數)
+            
+            # --- 2. 計算速度與功率 ---
+            speed_vx = speed_vy * tan_theta
+            req_rpm = speed_vx / lead_m
+            req_kw = (torque_req * req_rpm) / 9550
+            
+            # --- 3. 減速機選配驗證 ---
+            motor_t = 9550 * (sel_motor_kw / sel_motor_rpm)
+            gearbox_out_t = motor_t * sel_ratio * eff_gearbox * eff_mech
+            match_ratio = gearbox_out_t / torque_req
+            
+            st.success("✅ 計算成功！系統結果如下：")
+            
+            st.info("📊 核心推力與扭力需求")
+            r1, r2, r3 = st.columns(3)
+            r1.metric("最大水平推力 (F)", f"{force_n:.2f} N")
+            r2.metric("基礎所需扭力 (T)", f"{torque_nm:.2f} Nm")
+            r3.metric("修正扭力 (T2)", f"{torque_req:.2f} Nm", help="已乘上安全係數")
+            
+            st.divider()
+            
+            st.info("🔄 速度與馬達功率")
+            r4, r5, r6 = st.columns(3)
+            r4.metric("水平移動速度 (Vx)", f"{speed_vx:.4f} m/min")
+            r5.metric("螺桿所需轉速 (N)", f"{req_rpm:.2f} rpm")
+            r6.metric("建議馬達功率 (P)", f"{req_kw:.3f} kW")
+            
+            st.divider()
+            
+            # 依據倍率判斷扭力是否足夠，並給予不同顏色的提示
+            if match_ratio >= 1.0:
+                st.success(f"⚙️ 減速機選配評估：扭力充足")
+            else:
+                st.error(f"⚙️ 減速機選配評估：扭力不足")
+                
+            r7, r8, r9 = st.columns(3)
+            r7.metric("選用馬達扭力", f"{motor_t:.2f} Nm")
+            r8.metric("減速機輸出扭矩", f"{gearbox_out_t:.2f} Nm")
+            r9.metric("選配結果 (倍)", f"{match_ratio:.2f} 倍")
+            
+        except Exception as e:
+            st.error(f"數值輸入有誤！錯誤訊息：{e}")
