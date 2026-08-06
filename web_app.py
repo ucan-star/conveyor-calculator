@@ -166,53 +166,45 @@ elif app_mode == "🔄 3. 目標速度反推減速比":
 
 
 # ==========================================
-# 模組 4: 馬達轉速與扭力計算 (新增效率損失)
+# 模組 4: 馬達轉速與扭力計算
 # ==========================================
 elif app_mode == "⚡ 4. 馬達轉速與扭力計算":
-    st.title("⚡ 馬達基本參數與效率計算")
-    st.markdown("計算標準交流馬達的實際轉速、額定輸出扭力，以及運轉時的功率損失。")
+    st.title("⚡ 馬達基本參數計算")
+    st.markdown("計算標準交流馬達的實際轉速與額定輸出扭力，並扣除機械損耗。")
     
     with st.sidebar.form("motor_form"):
         st.header("📝 參數設定")
-        power_kw = st.number_input("馬達輸出功率 (kW)", value=0.75, format="%.2f", help="銘牌上的額定功率 (1 HP ≒ 0.75 kW)")
+        power_kw = st.number_input("馬達功率 (kW)", value=0.75, format="%.2f", help="1 HP ≒ 0.75 kW")
         freq = st.number_input("電源頻率 (Hz)", value=60)
         poles = st.number_input("馬達極數 (Poles)", value=4)
         slip = st.number_input("滑差率 (%)", value=2.7)
-        motor_eff = st.number_input("馬達效率 (%)", value=80, help="請輸入百分比，例如 80 代表 80%")
+        torque_loss_pct = st.number_input("扭力損失 / 機械損耗 (%)", value=5.0)
         submitted_motor = st.form_submit_button("🚀 計算馬達參數", use_container_width=True)
 
     if submitted_motor:
         try:
-            # 轉速與扭力計算
             sync_rpm = (120 * freq) / poles
             motor_rpm = sync_rpm * (1 - (slip / 100))
-            torque_nm = 9550 * (power_kw / motor_rpm)
             
-            # 效率與損耗計算
-            # 輸入電功率 = 輸出功率 / 效率
-            input_power_kw = power_kw / (motor_eff / 100)
-            # 損失功率 = 輸入電功率 - 輸出功率
-            loss_kw = input_power_kw - power_kw
+            # 扭力公式：T = 9550 * (kW / RPM)
+            rated_torque_nm = 9550 * (power_kw / motor_rpm)
+            
+            # 計算扣除損失後的實際扭力
+            actual_torque_nm = rated_torque_nm * (1 - (torque_loss_pct / 100))
             
             st.success("✅ 馬達參數計算完成：")
             
-            st.info("🔄 轉速與機械輸出")
-            col1, col2, col3 = st.columns(3)
-            col1.metric("馬達實際轉速", f"{motor_rpm:.0f} RPM")
-            col2.metric("同步轉速 (無載)", f"{sync_rpm:.0f} RPM")
-            col3.metric("馬達額定扭力", f"{torque_nm:.2f} N·m")
+            st.info("🔄 轉速數據")
+            col1, col2 = st.columns(2)
+            col1.metric("1. 馬達實際轉速", f"{motor_rpm:.0f} RPM")
+            col2.metric("2. 同步轉速 (無載)", f"{sync_rpm:.0f} RPM")
             
             st.divider()
             
-            st.info("⚡ 電氣輸入與效率損耗")
-            col4, col5, col6 = st.columns(3)
-            col4.metric("軸輸出功率 (銘牌值)", f"{power_kw:.2f} kW")
-            col5.metric("實際輸入電功率", f"{input_power_kw:.2f} kW")
-            col6.metric("功率損失 (發熱/摩擦)", f"{loss_kw:.2f} kW")
+            st.info("💪 扭力數據")
+            col3, col4 = st.columns(2)
+            col3.metric("1. 理論額定扭力", f"{rated_torque_nm:.2f} N·m")
+            col4.metric("2. 實際輸出扭力 (扣除損耗)", f"{actual_torque_nm:.2f} N·m")
             
-            st.warning(f"💡 **說明**：為使馬達軸端產生 **{power_kw:.2f} kW** 的動力，受限於 {motor_eff}% 的效率，實際需消耗 **{input_power_kw:.2f} kW** 的電能。其中約 **{loss_kw:.2f} kW** 會轉化為熱能等損耗。")
-            
-        except ZeroDivisionError:
-            st.error("運算錯誤：極數、轉速或效率不能為 0！")
         except Exception as e:
-            st.error(f"發生未預期錯誤：{e}")
+            st.error("數值輸入有誤！")
