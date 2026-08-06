@@ -25,7 +25,8 @@ app_mode = st.sidebar.radio(
         "🔄 3. 目標速度反推減速比", 
         "⚡ 4. 馬達轉速與扭力計算",
         "⚙️ 5. 減速機輸出扭力與轉速計算",
-        "🏗️ 6. 剪式升降機扭力計算" # [新增] 第6模組
+        "🏗️ 6. 剪式升降機扭力計算",
+        "🔩 7. 梯形螺桿計算" # [新增] 第7模組
     ]
 )
 st.sidebar.divider()
@@ -393,3 +394,95 @@ elif app_mode == "🏗️ 6. 剪式升降機扭力計算":
             
         except Exception as e:
             st.error(f"數值輸入有誤！錯誤訊息：{e}")
+
+# ==========================================
+# 模組 7: 梯形螺桿計算
+# ==========================================
+elif app_mode == "🔩 7. 梯形螺桿計算":
+    st.title("🔩 梯形螺桿推舉力與扭力計算")
+    st.markdown("依據馬達與減速機構正向推算總推舉力 (Fa)，以及從已知推力反推需求扭力 (T)。")
+    
+    # 使用 Tabs 分開正向與反向計算，畫面更乾淨
+    tab1, tab2 = st.tabs(["🚀 正向推算 (馬達 ➔ 推舉力)", "🔄 反向推算 (推舉力 ➔ 需求扭力)"])
+    
+    # ------------------ 正向計算區塊 ------------------
+    with tab1:
+        with st.form("screw_forward_form"):
+            st.header("📝 參數設定 (正向)")
+            
+            st.subheader("⚡ 傳動與效率參數")
+            c1, c2 = st.columns(2)
+            gb_eff = c1.number_input("1. 減速機效率 (0~1)", value=0.82, format="%.2f")
+            gb_ratio = c2.number_input("2. 減速機比數", value=15.0)
+            lift_eff = c1.number_input("3. 升降機效率 (0~1)", value=0.80, format="%.2f")
+            lift_ratio = c2.number_input("4. 升降機比數", value=13.5)
+            
+            st.divider()
+            
+            st.subheader("🔌 馬達與螺桿參數")
+            c3, c4 = st.columns(2)
+            motor_rpm = c3.number_input("5. 馬達轉速 (RPM)", value=1700.0)
+            motor_hp = c4.number_input("6. 馬達功率 (HP)", value=0.5, format="%.2f")
+            screw_eff = c3.number_input("7. 角牙效率 η (0~1)", value=0.20, format="%.2f")
+            lead_mm = c4.number_input("8. 導程 R (mm)", value=9.0)
+            
+            submit_fwd = st.form_submit_button("🚀 執行正向計算", use_container_width=True)
+            
+        if submit_fwd:
+            try:
+                # 1. 扭力轉換計算: HP -> KgM (公式: T = 716.2 * HP / RPM)
+                # 若直接帶入 EXCEL 數值 0.5HP / 1700RPM，算式結果約為 0.21 KgM
+                motor_t_kgm = 716.2 * (motor_hp / motor_rpm) 
+                
+                # 2. 總輸出扭力 = 馬達扭力 * (比數相乘) * (效率相乘)
+                total_t_kgm = motor_t_kgm * gb_ratio * lift_ratio * gb_eff * lift_eff
+                
+                # 3. 行程速度計算
+                speed_mm_min = (motor_rpm / (gb_ratio * lift_ratio)) * lead_mm
+                speed_mm_sec = speed_mm_min / 60
+                
+                # 4. 推舉力 Fa = (2 * pi * η * T) / (R * 10^-3)
+                thrust_kg = (2 * math.pi * screw_eff * total_t_kgm) / (lead_mm * 0.001)
+                
+                st.success("✅ 正向推算成功！")
+                
+                st.info("🔄 速度與扭力轉換")
+                res_c1, res_c2, res_c3 = st.columns(3)
+                res_c1.metric("馬達扭力", f"{motor_t_kgm:.2f} KgM")
+                res_c2.metric("總輸出扭力 (輸入扭力 T)", f"{total_t_kgm:.2f} KgM")
+                res_c3.metric("行程速度", f"{speed_mm_min:.1f} mm/分", help=f"換算為 {speed_mm_sec:.2f} mm/秒")
+                
+                st.divider()
+                
+                st.info("💪 推舉力結果")
+                res_c4, res_c5 = st.columns(2)
+                res_c4.metric("產生之推舉力 (Fa)", f"{thrust_kg:.0f} KG")
+                
+            except Exception as e:
+                st.error("數值輸入有誤，請檢查參數格式。")
+
+    # ------------------ 反向計算區塊 ------------------
+    with tab2:
+        with st.form("screw_reverse_form"):
+            st.header("📝 已知推力反推扭力")
+            
+            c5, c6 = st.columns(2)
+            screw_eff_rev = c5.number_input("1. 角牙效率 η (0~1)", value=0.20, format="%.2f", key="rev_eff")
+            lead_mm_rev = c6.number_input("2. 導程 R (mm)", value=9.0, key="rev_lead")
+            thrust_kg_rev = c5.number_input("3. 推舉力 Fa (KG)", value=3710.0, key="rev_thrust")
+            
+            submit_rev = st.form_submit_button("🔄 執行反向計算", use_container_width=True)
+            
+        if submit_rev:
+            try:
+                # 公式: T = (Fa * R * 10^-3) / (2 * pi * η)
+                req_t_kgm = (thrust_kg_rev * lead_mm_rev * 0.001) / (2 * math.pi * screw_eff_rev)
+                
+                st.success("✅ 反向推算成功！")
+                
+                st.info("📊 需求扭力結果")
+                res_c6, res_c7 = st.columns(2)
+                res_c6.metric("需求扭力 (輸入扭力 T)", f"{req_t_kgm:.2f} KgM")
+                
+            except Exception as e:
+                st.error("數值輸入有誤，請檢查參數格式。")
