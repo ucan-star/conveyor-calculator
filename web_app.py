@@ -23,7 +23,8 @@ app_mode = st.sidebar.radio(
         "⚙️ 1. 輸送機動力計算 (主系統)", 
         "🏃‍♂️ 2. 輸送帶線速度計算", 
         "🔄 3. 目標速度反推減速比", 
-        "⚡ 4. 馬達轉速與扭力計算"
+        "⚡ 4. 馬達轉速與扭力計算",
+        "⚙️ 5. 減速機輸出扭力與轉速計算" # [新增] 第5模組
     ]
 )
 st.sidebar.divider()
@@ -232,3 +233,66 @@ elif app_mode == "⚡ 4. 馬達轉速與扭力計算":
             
         except Exception as e:
             st.error("數值輸入有誤！")
+
+# ==========================================
+# 模組 5: 減速機輸出扭力與轉速計算
+# ==========================================
+elif app_mode == "⚙️ 5. 減速機輸出扭力與轉速計算":
+    st.title("⚙️ 減速機輸出參數計算")
+    st.markdown("計算馬達經過減速機降速，並扣除傳動效率與機械損耗後的最終輸出轉速與扭力。")
+    
+    with st.form("gearbox_output_form"):
+        st.header("📝 參數設定")
+        
+        st.subheader("⚡ 馬達參數")
+        c1, c2 = st.columns(2)
+        power_kw = c1.number_input("1. 馬達功率 (kW)", value=0.75, format="%.2f")
+        freq = c2.number_input("2. 電源頻率 (Hz)", value=60)
+        poles = c1.number_input("3. 馬達極數 (Poles)", value=4)
+        slip = c2.number_input("4. 滑差率 (%)", value=5.5)
+        
+        st.divider()
+        
+        st.subheader("⚙️ 減速機與損耗參數")
+        c3, c4 = st.columns(2)
+        ratio = c3.number_input("5. 減速比 (1:X)", value=20)
+        eff_gear = c4.number_input("6. 減速機效率 (%)", value=85)
+        torque_loss_pct = c3.number_input("7. 扭力損失 / 機械損耗 (%)", value=5.5)
+        
+        submitted_mod5 = st.form_submit_button("🚀 計算輸出參數", use_container_width=True)
+
+    if submitted_mod5:
+        try:
+            # 1. 計算馬達實際轉速
+            sync_rpm = (120 * freq) / poles
+            motor_rpm = sync_rpm * (1 - (slip / 100))
+            
+            # 2. 計算減速機輸出轉速
+            output_rpm = motor_rpm / ratio
+            
+            # 3. 計算馬達原始扭力 (N·m)
+            motor_torque_nm = 9550 * (power_kw / motor_rpm)
+            
+            # 4. 計算綜合效率 (減速機效率 * 機械損耗)
+            total_eff = (eff_gear / 100) * (1 - (torque_loss_pct / 100))
+            
+            # 5. 計算最終輸出扭力 (N·m 與 kg·m)
+            output_torque_nm = motor_torque_nm * ratio * total_eff
+            output_torque_kgm = output_torque_nm / 9.81
+            
+            st.success("✅ 計算成功！輸出結果如下：")
+            
+            st.info("🔄 轉速數據")
+            res_col1, res_col2 = st.columns(2)
+            res_col1.metric("1. 馬達實際轉速", f"{motor_rpm:.0f} RPM")
+            res_col2.metric("2. 減速機輸出轉速", f"{output_rpm:.1f} RPM")
+            
+            st.divider()
+            
+            st.info("💪 扭力數據")
+            res_col3, res_col4 = st.columns(2)
+            res_col3.metric("1. 馬達原始扭力", f"{motor_torque_nm:.2f} N·m")
+            res_col4.metric("2. 最終輸出扭力", f"{output_torque_nm:.2f} N·m ({output_torque_kgm:.2f} kg·m)")
+            
+        except Exception as e:
+            st.error("數值輸入有誤！請確認輸入的參數格式。")
