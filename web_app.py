@@ -160,7 +160,7 @@ elif app_mode == "🔄 3. 目標速度反推減速比":
             
             st.success("✅ 減速比計算完成：")
             col1, col2 = st.columns(2)
-            col1.metric("精管理論減速比", f"1 : {exact_ratio:.2f}")
+            col1.metric("理論減速比", f"1 : {exact_ratio:.2f}")
             col2.metric("滾筒目標轉速", f"{req_drum_rpm:.1f} RPM")
             st.info("💡 建議：請選擇市面上最接近上述數值的標準減速比 (例如 1:10, 1:15, 1:20 等)。")
         except Exception as e:
