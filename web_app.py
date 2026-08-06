@@ -47,53 +47,28 @@ st.set_page_config(page_title="輸送機動力計算", page_icon="⚙️", layou
 st.title("⚙️ 輸送機動力計算")
 st.markdown("👉 **參數設定已移至左側選單**。(手機版請點擊左上角 `>>` 展開選單)")
 
-# 建立馬達資料庫 (常見規格)
-motor_database = {
-    "手動自訂參數": {"poles": 4, "slip": 2.7, "eff": 95.0},
-    "MS系列 0.5 HP (4P)": {"poles": 4, "slip": 5.0, "eff": 75.0},
-    "MS系列 1 HP (4P)": {"poles": 4, "slip": 4.0, "eff": 78.0},
-    "MS系列 2 HP (4P)": {"poles": 4, "slip": 3.0, "eff": 81.0},
-    "MS系列 3 HP (4P)": {"poles": 4, "slip": 2.5, "eff": 84.0}
-}
-
-st.sidebar.header("📝 參數設定")
-
-# 快捷選單放在 form 外面，選擇後才能即時連動下方的預設值
-selected_motor = st.sidebar.selectbox(
-    "📌 快速載入馬達預設值", 
-    list(motor_database.keys()),
-    help="選擇後會自動帶入進階參數中的滑差率與效率"
-)
-
 with st.sidebar.form("calculator_form"):
+    st.header("📝 參數設定")
     
     st.subheader("📦 負載與機械結構")
-    # value 改為整數 (例如 400)，就不會顯示 .00
-    diameter = st.number_input("1. 驅動輪直徑 (mm)", value=400)
-    mass = st.number_input("2. 總負載質量 (kg)", value=500)
-    mu = st.number_input("3. 摩擦係數 (μ)", value=0.15, format="%.2f")
+    # value 設為整數，將不會顯示小數點
+    diameter = st.number_input("1. 驅動輪直徑 (mm)", value=90)
+    mass = st.number_input("2. 總負載質量 (kg)", value=1000)
+    mu = st.number_input("3. 摩擦係數 (μ)", value=0.2, format="%.2f")
     angle = st.number_input("4. 傾斜角度 (度)", value=0)
 
     st.divider() 
     
     st.subheader("⚡ 馬達與傳動系統")
     freq = st.number_input("電源頻率 (Hz)", value=60)
+    poles = st.number_input("馬達極數 (Poles)", value=4)
     ratio = st.number_input("減速比 (1:X)", value=10)
     
     with st.expander("⚙️ 進階參數 (點擊展開)"):
-        # 根據上面的選單自動帶入數值
-        default_poles = motor_database[selected_motor]["poles"]
-        default_slip = motor_database[selected_motor]["slip"]
-        default_eff = motor_database[selected_motor]["eff"]
-        
-        if selected_motor != "手動自訂參數":
-            st.info(f"已自動套用 {selected_motor} 預設值，您仍可微調。")
-            
-        poles = st.number_input("馬達極數 (Poles)", value=default_poles)
-        slip = st.number_input("馬達滑差率 (%)", value=float(default_slip))
+        slip = st.number_input("馬達滑差率 (%)", value=8)
         eff_gear = st.number_input("減速機效率 (%)", value=90)
-        eff_trans = st.number_input("馬達效率 (%)", value=float(default_eff))
-        sf = st.number_input("安全係數", value=1.25)
+        eff_trans = st.number_input("馬達效率 (%)", value=95)
+        sf = st.number_input("安全係數", value=1.3)
 
     submitted = st.form_submit_button("🚀 執行計算", use_container_width=True)
 
