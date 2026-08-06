@@ -75,8 +75,14 @@ if app_mode == "⚙️ 1. 輸送機動力計算 (主系統)":
             angle_rad = math.radians(angle)
             f_total = ((mu * mass * g * math.cos(angle_rad)) + (mass * g * math.sin(angle_rad))) * sf
             
+            # 效率與扭力計算
             total_efficiency = (eff_gear / 100) * (1 - (torque_loss_pct / 100))
             torque_drum = f_total * radius
+            
+            # 減速機端輸出扭力 (滾筒需求扭力加上機械損耗)
+            torque_gearbox = torque_drum / (1 - (torque_loss_pct / 100))
+            
+            # 馬達端輸出扭力
             torque_motor = torque_drum / (ratio * total_efficiency)
             
             kw = ((f_total * (speed_m_min / 60)) / total_efficiency) / 1000
@@ -92,10 +98,14 @@ if app_mode == "⚙️ 1. 輸送機動力計算 (主系統)":
             st.divider()
             
             st.info("🎯 核心驅動需求對照")
-            res_col4, res_col5, res_col6 = st.columns(3)
+            # 採用 2x2 雙欄位設計，手機與電腦版皆易於閱讀
+            res_col4, res_col5 = st.columns(2)
             res_col4.metric("1. 理論所需功率", f"{kw:.2f} kW")
             res_col5.metric("2. 馬達扭力 (馬達端)", f"{torque_motor:.2f} N·m")
-            res_col6.metric("3. 輸送帶需求扭力 (滾筒端)", f"{torque_drum:.2f} N·m")
+            
+            res_col6, res_col7 = st.columns(2)
+            res_col6.metric("3. 減速機扭力 (減速機端)", f"{torque_gearbox:.2f} N·m")
+            res_col7.metric("4. 輸送帶需求扭力 (滾筒端)", f"{torque_drum:.2f} N·m")
             
             st.warning(f"💡 **工程建議**：選用之馬達功率需大於 **{kw:.2f} kW** (搭配減速比 1:{ratio})")
             
