@@ -192,11 +192,14 @@ elif app_mode == "⚡ 4. 馬達轉速與扭力計算":
             # 計算扣除損失後的實際扭力
             actual_torque_nm = rated_torque_nm * (1 - (torque_loss_pct / 100))
             
+            # 換算 kg·m (1 kg·m ≒ 9.81 N·m)
+            rated_torque_kgm = rated_torque_nm / 9.81
+            actual_torque_kgm = actual_torque_nm / 9.81
+            
             st.success("✅ 馬達參數計算完成：")
             
             st.info("🔄 轉速數據")
             col1, col2 = st.columns(2)
-            # [修改] 調整了顯示順序
             col1.metric("1. 同步轉速 (無載)", f"{sync_rpm:.0f} RPM")
             col2.metric("2. 馬達實際轉速", f"{motor_rpm:.0f} RPM")
             
@@ -204,8 +207,9 @@ elif app_mode == "⚡ 4. 馬達轉速與扭力計算":
             
             st.info("💪 扭力數據")
             col3, col4 = st.columns(2)
-            col3.metric("1. 理論額定扭力", f"{rated_torque_nm:.2f} N·m")
-            col4.metric("2. 實際輸出扭力 (扣除損耗)", f"{actual_torque_nm:.2f} N·m")
+            # 在 N·m 後方加入 kg·m 顯示
+            col3.metric("1. 理論額定扭力", f"{rated_torque_nm:.2f} N·m ({rated_torque_kgm:.2f} kg·m)")
+            col4.metric("2. 實際輸出扭力 (扣除損耗)", f"{actual_torque_nm:.2f} N·m ({actual_torque_kgm:.2f} kg·m)")
             
         except Exception as e:
             st.error("數值輸入有誤！")
