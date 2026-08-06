@@ -14,7 +14,7 @@ st.markdown(hide_st_style, unsafe_allow_html=True)
 st.set_page_config(page_title="輸送機工程計算系統", page_icon="⚙️", layout="wide")
 
 # ==========================================
-# 側邊欄：功能導覽選單
+# 側邊欄：功能導覽選單 (僅保留選單)
 # ==========================================
 st.sidebar.title("📌 工程計算工具箱")
 app_mode = st.sidebar.radio(
@@ -29,35 +29,37 @@ app_mode = st.sidebar.radio(
 st.sidebar.divider()
 
 # ==========================================
-# 模組 1: 輸送機動力計算 (原版主功能)
+# 模組 1: 輸送機動力計算 (主系統)
 # ==========================================
 if app_mode == "⚙️ 1. 輸送機動力計算 (主系統)":
     st.title("⚙️ 輸送機動力計算")
-    # [修改] 提示標語更新
-    st.markdown("👉 **參數設定在左側選單**")
 
-    with st.sidebar.form("calculator_form"):
+    with st.form("calculator_form"):
         st.header("📝 參數設定")
         
         st.subheader("📦 負載與機械結構")
-        diameter = st.number_input("1. 驅動輪直徑 (mm)", value=100)
-        mass = st.number_input("2. 總負載質量 (kg)", value=500)
-        mu = st.number_input("3. 摩擦係數 (μ)", value=0.20, format="%.2f")
-        angle = st.number_input("4. 傾斜角度 (度)", value=0)
+        c1, c2 = st.columns(2)
+        diameter = c1.number_input("1. 驅動輪直徑 (mm)", value=100)
+        mass = c2.number_input("2. 總負載質量 (kg)", value=500)
+        mu = c1.number_input("3. 摩擦係數 (μ)", value=0.20, format="%.2f")
+        angle = c2.number_input("4. 傾斜角度 (度)", value=0)
 
         st.divider() 
         
         st.subheader("⚡ 馬達與傳動系統")
-        freq = st.number_input("電源頻率 (Hz)", value=60)
-        poles = st.number_input("馬達極數 (Poles)", value=4)
-        ratio = st.number_input("減速比 (1:X)", value=20)
+        c3, c4 = st.columns(2)
+        freq = c3.number_input("電源頻率 (Hz)", value=60)
+        poles = c4.number_input("馬達極數 (Poles)", value=4)
+        ratio = c3.number_input("減速比 (1:X)", value=20)
         
-        # [修改] 移除 expander 展開按鈕，改為直接展開排列
+        st.divider()
+
         st.subheader("⚙️ 進階參數")
-        slip = st.number_input("馬達滑差率 (%)", value=5.5)
-        eff_gear = st.number_input("減速機效率 (%)", value=85)
-        torque_loss_pct = st.number_input("扭力損失 / 機械損耗 (%)", value=5.5)
-        sf = st.number_input("安全係數", value=1.25)
+        c5, c6 = st.columns(2)
+        slip = c5.number_input("馬達滑差率 (%)", value=5.5)
+        eff_gear = c6.number_input("減速機效率 (%)", value=85)
+        torque_loss_pct = c5.number_input("扭力損失 / 機械損耗 (%)", value=5.5)
+        sf = c6.number_input("安全係數", value=1.25)
 
         submitted_main = st.form_submit_button("🚀 執行計算", use_container_width=True)
 
@@ -108,13 +110,15 @@ elif app_mode == "🏃‍♂️ 2. 輸送帶線速度計算":
     st.title("🏃‍♂️ 輸送帶線速度計算")
     st.markdown("單純計算現有設備的運行速度。")
     
-    with st.sidebar.form("speed_form"):
+    with st.form("speed_form"):
         st.header("📝 參數設定")
-        diameter = st.number_input("驅動輪直徑 (mm)", value=100)
-        freq = st.number_input("電源頻率 (Hz)", value=60)
-        poles = st.number_input("馬達極數 (Poles)", value=4)
-        slip = st.number_input("馬達滑差率 (%)", value=5.5)
-        ratio = st.number_input("減速比 (1:X)", value=20)
+        c1, c2 = st.columns(2)
+        diameter = c1.number_input("驅動輪直徑 (mm)", value=100)
+        ratio = c2.number_input("減速比 (1:X)", value=20)
+        freq = c1.number_input("電源頻率 (Hz)", value=60)
+        poles = c2.number_input("馬達極數 (Poles)", value=4)
+        slip = c1.number_input("馬達滑差率 (%)", value=5.5)
+        
         submitted_speed = st.form_submit_button("🚀 計算線速度", use_container_width=True)
 
     if submitted_speed:
@@ -139,13 +143,15 @@ elif app_mode == "🔄 3. 目標速度反推減速比":
     st.title("🔄 目標速度反推減速比")
     st.markdown("已知需要的輸送速度，反推應該購買多大的減速比。")
     
-    with st.sidebar.form("ratio_form"):
+    with st.form("ratio_form"):
         st.header("📝 參數設定")
-        target_speed = st.number_input("目標線速度 (M/min)", value=15.0, format="%.1f")
-        diameter = st.number_input("驅動輪直徑 (mm)", value=100)
-        freq = st.number_input("電源頻率 (Hz)", value=60)
-        poles = st.number_input("馬達極數 (Poles)", value=4)
-        slip = st.number_input("馬達滑差率 (%)", value=5.5)
+        c1, c2 = st.columns(2)
+        target_speed = c1.number_input("目標線速度 (M/min)", value=15.0, format="%.1f")
+        diameter = c2.number_input("驅動輪直徑 (mm)", value=100)
+        freq = c1.number_input("電源頻率 (Hz)", value=60)
+        poles = c2.number_input("馬達極數 (Poles)", value=4)
+        slip = c1.number_input("馬達滑差率 (%)", value=5.5)
+        
         submitted_ratio = st.form_submit_button("🚀 反推減速比", use_container_width=True)
 
     if submitted_ratio:
@@ -160,7 +166,7 @@ elif app_mode == "🔄 3. 目標速度反推減速比":
             
             st.success("✅ 減速比計算完成：")
             col1, col2 = st.columns(2)
-            col1.metric("理論減速比", f"1 : {exact_ratio:.2f}")
+            col1.metric("精管理論減速比", f"1 : {exact_ratio:.2f}")
             col2.metric("滾筒目標轉速", f"{req_drum_rpm:.1f} RPM")
             st.info("💡 建議：請選擇市面上最接近上述數值的標準減速比 (例如 1:10, 1:15, 1:20 等)。")
         except Exception as e:
@@ -174,13 +180,15 @@ elif app_mode == "⚡ 4. 馬達轉速與扭力計算":
     st.title("⚡ 馬達基本參數計算")
     st.markdown("計算標準交流馬達的實際轉速與額定輸出扭力，並扣除機械損耗。")
     
-    with st.sidebar.form("motor_form"):
+    with st.form("motor_form"):
         st.header("📝 參數設定")
-        power_kw = st.number_input("馬達功率 (kW)", value=0.75, format="%.2f", help="1 HP ≒ 0.75 kW")
-        freq = st.number_input("電源頻率 (Hz)", value=60)
-        poles = st.number_input("馬達極數 (Poles)", value=4)
-        slip = st.number_input("滑差率 (%)", value=5.5)
-        torque_loss_pct = st.number_input("扭力損失 / 機械損耗 (%)", value=5.5)
+        c1, c2 = st.columns(2)
+        power_kw = c1.number_input("馬達功率 (kW)", value=0.75, format="%.2f", help="1 HP ≒ 0.75 kW")
+        torque_loss_pct = c2.number_input("扭力損失 / 機械損耗 (%)", value=5.5)
+        freq = c1.number_input("電源頻率 (Hz)", value=60)
+        poles = c2.number_input("馬達極數 (Poles)", value=4)
+        slip = c1.number_input("滑差率 (%)", value=5.5)
+        
         submitted_motor = st.form_submit_button("🚀 計算馬達參數", use_container_width=True)
 
     if submitted_motor:
