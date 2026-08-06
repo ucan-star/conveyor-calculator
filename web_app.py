@@ -196,8 +196,9 @@ elif app_mode == "⚡ 4. 馬達轉速與扭力計算":
             
             st.info("🔄 轉速數據")
             col1, col2 = st.columns(2)
-            col1.metric("1. 馬達實際轉速", f"{motor_rpm:.0f} RPM")
-            col2.metric("2. 同步轉速 (無載)", f"{sync_rpm:.0f} RPM")
+            # [修改] 調整了顯示順序
+            col1.metric("1. 同步轉速 (無載)", f"{sync_rpm:.0f} RPM")
+            col2.metric("2. 馬達實際轉速", f"{motor_rpm:.0f} RPM")
             
             st.divider()
             
