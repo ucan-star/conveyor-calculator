@@ -247,10 +247,10 @@ elif app_mode == "⚙️ 5. 減速機輸出扭力與轉速計算":
         st.subheader("⚡ 馬達參數")
         c1, c2 = st.columns(2)
         power_kw = c1.number_input("1. 馬達功率 (kW)", value=0.75, format="%.2f")
-        freq = c2.number_input("2. 電源頻率 (Hz)", value=60)
-        slip = c1.number_input("3. 滑差率 (%)", value=5.5)
-        torque_loss_pct = c2.number_input("4. 扭力損失 / 機械損耗 (%)", value=5.5)
-        poles = c1.number_input("5. 馬達極數 (Poles)", value=4)
+        poles = c2.number_input("2. 馬達極數 (Poles)", value=4)
+        freq = c1.number_input("3. 電源頻率 (Hz)", value=60)
+        slip = c2.number_input("4. 滑差率 (%)", value=5.5)
+        torque_loss_pct = c1.number_input("5. 扭力損失 / 機械損耗 (%)", value=5.5)
         
         st.divider()
         
@@ -270,8 +270,9 @@ elif app_mode == "⚙️ 5. 減速機輸出扭力與轉速計算":
             # 2. 計算減速機輸出轉速
             output_rpm = motor_rpm / ratio
             
-            # 3. 計算馬達原始扭力 (N·m)
+            # 3. 計算馬達原始扭力 (N·m 與 kg·m)
             motor_torque_nm = 9550 * (power_kw / motor_rpm)
+            motor_torque_kgm = motor_torque_nm / 9.81
             
             # 4. 計算綜合效率 (減速機效率 * 機械損耗)
             total_eff = (eff_gear / 100) * (1 - (torque_loss_pct / 100))
@@ -291,7 +292,7 @@ elif app_mode == "⚙️ 5. 減速機輸出扭力與轉速計算":
             
             st.info("💪 扭力數據")
             res_col3, res_col4 = st.columns(2)
-            res_col3.metric("1. 馬達原始扭力", f"{motor_torque_nm:.2f} N·m")
+            res_col3.metric("1. 馬達原始扭力", f"{motor_torque_nm:.2f} N·m ({motor_torque_kgm:.2f} kg·m)")
             res_col4.metric("2. 最終輸出扭力", f"{output_torque_nm:.2f} N·m ({output_torque_kgm:.2f} kg·m)")
             
         except Exception as e:
