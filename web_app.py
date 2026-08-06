@@ -94,9 +94,7 @@ if submitted:
     except ZeroDivisionError:
         st.error("運算錯誤：極數或減速比不能為 0！")
     except Exception as e:
-        st.error(f"發生未預期錯誤：{e}") # 👈 請把這行最前面的空白刪掉，重新按空白鍵對齊上面
+        st.error(f"發生未預期錯誤：{e}")
 else:
     st.info("👈 請在左側選單輸入您的工程參數，並點擊「🚀 執行計算」。")
-else:
-    # 剛載入網頁、還沒按計算時的提示
-    st.info("👈 請在左側選單輸入您的工程參數，並點擊「🚀 執行計算」。")
+       
