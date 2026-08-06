@@ -45,7 +45,7 @@ def calculate_full_system(mass, mu, diameter_mm, angle_deg, sf, gear_ratio, eff_
 
 st.set_page_config(page_title="輸送機動力計算", page_icon="⚙️", layout="wide")
 st.title("⚙️ 輸送機動力計算")
-st.markdown("👉 **參數設定已移至左側選單**。(手機版請點擊左上角 `>>` 展開選單)")
+st.markdown("👉 **參數設定在左側選單**。(手機版請點擊左上角 `>>` 展開選單)")
 
 with st.sidebar.form("calculator_form"):
     st.header("📝 參數設定")
