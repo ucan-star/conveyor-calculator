@@ -26,7 +26,8 @@ app_mode = st.sidebar.radio(
         "⚡ 4. 馬達轉速與扭力計算",
         "⚙️ 5. 減速機輸出扭力與轉速計算",
         "🏗️ 6. 剪式升降機扭力計算",
-        "🔩 7. 梯形螺桿計算" # [新增] 第7模組
+        "🔩 7. 梯形螺桿計算",
+        "⚡ 8. 三相馬達額定電流計算" # [新增] 第8模組
     ]
 )
 st.sidebar.divider()
@@ -489,3 +490,44 @@ elif app_mode == "🔩 7. 梯形螺桿計算":
                 
             except Exception as e:
                 st.error("數值輸入有誤，請檢查參數格式。")
+                
+# ==========================================
+# 模組 8: 三相馬達額定電流計算
+# ==========================================
+elif app_mode == "⚡ 8. 三相馬達額定電流計算":
+    st.title("⚡ 三相馬達額定電流計算")
+    st.markdown("依據馬達功率、電壓、功率因數與效率，計算三相感應馬達的滿載額定電流。")
+
+    with st.form("motor_current_form"):
+        st.header("📝 參數設定")
+
+        c1, c2 = st.columns(2)
+        power_kw = c1.number_input("1. 馬達功率 (kW)", value=0.75, format="%.2f", help="1 HP ≒ 0.75 kW")
+        voltage = c2.number_input("2. 三相電壓 (V)", value=220, step=10, help="常見為 220, 380 或 440")
+        pf = c1.number_input("3. 功率因數 (cosθ)", value=0.82, format="%.2f", help="一般三相馬達約在 0.75 ~ 0.90 之間")
+        eff = c2.number_input("4. 馬達效率 (%)", value=80.0, format="%.1f", help="一般約 75% ~ 95%")
+
+        submitted_current = st.form_submit_button("🚀 計算額定電流", use_container_width=True)
+
+    if submitted_current:
+        try:
+            # 轉換公式：I = (kW * 1000) / (√3 * V * 功率因數 * 效率)
+            power_w = power_kw * 1000
+            eff_decimal = eff / 100
+            
+            # 避免分母為0的錯誤
+            if voltage > 0 and pf > 0 and eff_decimal > 0:
+                current_a = power_w / (math.sqrt(3) * voltage * pf * eff_decimal)
+                
+                st.success("✅ 計算完成！")
+                
+                st.info("⚡ 滿載電流數據")
+                col1, col2 = st.columns(2)
+                col1.metric("馬達滿載額定電流 (I)", f"{current_a:.2f} A")
+                col2.metric("輸入設定功率", f"{power_kw:.2f} kW")
+                
+            else:
+                st.error("電壓、功率因數與效率必須大於 0。")
+
+        except Exception as e:
+            st.error(f"數值輸入有誤，請檢查參數格式！錯誤訊息：{e}")
