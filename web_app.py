@@ -59,9 +59,9 @@ if app_mode == "⚙️ 1. 輸送機動力計算 (主系統)":
 
         st.subheader("⚙️ 進階參數")
         c5, c6 = st.columns(2)
-        slip = c5.number_input("馬達滑差率 (%)", value=5.5)
+        slip = c5.number_input("馬達滑差率 (%)", value=6)
         eff_gear = c6.number_input("減速機效率 (%)", value=85)
-        torque_loss_pct = c5.number_input("馬達扭力損失/機械損耗 (%)", value=5.5)
+        torque_loss_pct = c5.number_input("馬達扭力損失/機械損耗 (%)", value=5)
         sf = c6.number_input("安全係數", value=1.25)
 
         submitted_main = st.form_submit_button("🚀 執行計算", use_container_width=True)
@@ -130,7 +130,7 @@ elif app_mode == "🏃‍♂️ 2. 輸送帶線速度計算":
         ratio = c2.number_input("減速比 (1:X)", value=20)
         freq = c1.number_input("電源頻率 (Hz)", value=60)
         poles = c2.number_input("馬達極數 (Poles)", value=4)
-        slip = c1.number_input("馬達滑差率 (%)", value=5.5)
+        slip = c1.number_input("馬達滑差率 (%)", value=6)
         
         submitted_speed = st.form_submit_button("🚀 計算線速度", use_container_width=True)
 
@@ -164,7 +164,7 @@ elif app_mode == "🔄 3. 目標速度反推減速比":
         diameter = c2.number_input("驅動輪直徑 (mm)", value=100)
         freq = c1.number_input("電源頻率 (Hz)", value=60)
         poles = c2.number_input("馬達極數 (Poles)", value=4)
-        slip = c1.number_input("馬達滑差率 (%)", value=5.5)
+        slip = c1.number_input("馬達滑差率 (%)", value=6)
         
         submitted_ratio = st.form_submit_button("🚀 反推減速比", use_container_width=True)
 
@@ -200,10 +200,10 @@ elif app_mode == "⚡ 4. 馬達轉速與扭力計算":
         st.header("📝 參數設定")
         c1, c2 = st.columns(2)
         power_kw = c1.number_input("馬達功率 (kW)", value=0.75, format="%.2f", help="1 HP ≒ 0.75 kW")
-        torque_loss_pct = c2.number_input("扭力損失 / 機械損耗 (%)", value=5.5)
+        torque_loss_pct = c2.number_input("扭力損失 / 機械損耗 (%)", value=5)
         freq = c1.number_input("電源頻率 (Hz)", value=60)
         poles = c2.number_input("馬達極數 (Poles)", value=4)
-        slip = c1.number_input("滑差率 (%)", value=5.5)
+        slip = c1.number_input("滑差率 (%)", value=6)
         
         submitted_motor = st.form_submit_button("🚀 計算馬達參數", use_container_width=True)
 
@@ -254,8 +254,8 @@ elif app_mode == "⚙️ 5. 減速機輸出扭力與轉速計算":
         power_kw = c1.number_input("1. 馬達功率 (kW)", value=0.75, format="%.2f")
         poles = c2.number_input("2. 馬達極數 (Poles)", value=4)
         freq = c1.number_input("3. 電源頻率 (Hz)", value=60)
-        slip = c2.number_input("4. 滑差率 (%)", value=5.5)
-        torque_loss_pct = c1.number_input("5. 扭力損失 / 機械損耗 (%)", value=5.5)
+        slip = c2.number_input("4. 滑差率 (%)", value=6)
+        torque_loss_pct = c1.number_input("5. 扭力損失 / 機械損耗 (%)", value=5)
         
         st.divider()
         
