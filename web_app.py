@@ -142,9 +142,10 @@ elif app_mode == "🏃‍♂️ 2. 輸送帶線速度計算":
             speed_m_min = drum_rpm * 2 * math.pi * radius
             
             st.success("✅ 速度計算完成：")
-            col1, col2 = st.columns(2)
+            col1, col2, col3 = st.columns(3)
             col1.metric("輸送帶線速度", f"{speed_m_min:.2f} M/min")
-            col2.metric("減速機輸出轉速", f"{drum_rpm:.1f} RPM")
+            col2.metric("馬達實際轉速", f"{motor_rpm:.0f} RPM")
+            col3.metric("減速機輸出轉速", f"{drum_rpm:.1f} RPM")
         except Exception as e:
             st.error("數值輸入有誤！")
 
@@ -178,9 +179,11 @@ elif app_mode == "🔄 3. 目標速度反推減速比":
             exact_ratio = motor_rpm / req_drum_rpm
             
             st.success("✅ 減速比計算完成：")
-            col1, col2 = st.columns(2)
+            col1, col2, col3 = st.columns(3)
             col1.metric("精管理論減速比", f"1 : {exact_ratio:.2f}")
-            col2.metric("滾筒目標轉速", f"{req_drum_rpm:.1f} RPM")
+            col2.metric("馬達實際轉速", f"{motor_rpm:.0f} RPM")
+            col3.metric("滾筒目標轉速", f"{req_drum_rpm:.1f} RPM")
+            
             st.info("💡 建議：請選擇市面上最接近上述數值的標準減速比 (例如 1:10, 1:15, 1:20 等)。")
         except Exception as e:
             st.error("數值輸入有誤！")
