@@ -505,8 +505,8 @@ elif app_mode == "⚡ 8. 馬達額定電流計算 (單/三相)":
         phase = c1.radio("1. 電源相數", ["三相 (3-Phase)", "單相 (1-Phase)"], horizontal=True)
         power_kw = c2.number_input("2. 馬達功率 (kW)", value=0.75, format="%.2f", help="1 HP ≒ 0.75 kW")
         voltage = c1.number_input("3. 額定電壓 (V)", value=220, step=10, help="三相常見 220/380V，單相常見 110/220V")
-        pf = c2.number_input("4. 功率因數 (cosθ)", value=0.82, format="%.2f", help="一般馬達約在 0.75 ~ 0.90 之間")
-        eff = c1.number_input("5. 馬達效率 (%)", value=80.0, format="%.1f", help="一般約 75% ~ 95%")
+        pf = c2.number_input("4. 功率因數 (cosθ)", value=0.75, format="%.2f", help="一般馬達約在 0.75 ~ 0.90 之間")
+        eff = c1.number_input("5. 馬達效率 (%)", value=82.5, format="%.1f", help="一般約 75% ~ 95%")
 
         submitted_current = st.form_submit_button("🚀 計算額定電流", use_container_width=True)
 
