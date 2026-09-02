@@ -61,7 +61,7 @@ if app_mode == "⚙️ 1. 輸送機動力計算 (主系統)":
         c5, c6 = st.columns(2)
         slip = c5.number_input("馬達滑差率 (%)", value=5.5)
         eff_gear = c6.number_input("減速機效率 (%)", value=85)
-        torque_loss_pct = c5.number_input("扭力損失/機械損耗 (%)", value=5.5)
+        torque_loss_pct = c5.number_input("扭力損失/機械損耗 (%)", value=5)
         sf = c6.number_input("安全係數", value=1.25)
 
         submitted_main = st.form_submit_button("🚀 執行計算", use_container_width=True)
